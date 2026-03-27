@@ -6,6 +6,8 @@ from anthropic import Anthropic
 
 load_dotenv(dotenv_path='./.env')
 
+ALLOWED_USERS = [5405164096]  # Só você pode usar o bot
+
 api_key = os.getenv("ANTHROPIC_API_KEY")
 if not api_key:
     print("❌ ERRO: ANTHROPIC_API_KEY não encontrada!")
@@ -14,6 +16,11 @@ if not api_key:
 client = Anthropic(api_key=api_key)
 
 async def responder(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ALLOWED_USERS:
+        print(f"⛔ Acesso negado: {update.effective_user.id}")
+        await update.message.reply_text("Acesso negado.")
+        return
+    
     texto_usuario = update.message.text
     print(f"📩 Recebi: {texto_usuario}")
     try:
